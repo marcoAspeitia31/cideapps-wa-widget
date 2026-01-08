@@ -191,6 +191,14 @@ class Cideapps_Wa_Widget_Admin {
 			'cwaw_button_section'
 		);
 
+		add_settings_field(
+			'badge',
+			__( 'Badge', 'cideapps-wa-widget' ),
+			array( $this, 'badge_field_callback' ),
+			$this->plugin_name,
+			'cwaw_button_section'
+		);
+
 		// Sección Chat Window
 		add_settings_section(
 			'cwaw_chat_window_section',
@@ -239,6 +247,7 @@ class Cideapps_Wa_Widget_Admin {
 		$sanitized['tooltip'] = isset( $input['tooltip'] ) ? sanitize_text_field( $input['tooltip'] ) : '';
 		$sanitized['position'] = isset( $input['position'] ) && in_array( $input['position'], array( 'left', 'right' ), true ) ? $input['position'] : 'right';
 		$sanitized['button_delay'] = isset( $input['button_delay'] ) ? intval( $input['button_delay'] ) : 0;
+		$sanitized['badge'] = isset( $input['badge'] ) ? sanitize_text_field( $input['badge'] ) : '';
 
 		// Chat Window section
 		$sanitized['cta'] = isset( $input['cta'] ) ? wp_kses_post( $input['cta'] ) : '';
@@ -317,6 +326,13 @@ class Cideapps_Wa_Widget_Admin {
 		echo '<p class="description">' . esc_html__( 'Seconds before showing the button. Use -1 to show immediately without animation.', 'cideapps-wa-widget' ) . '</p>';
 	}
 
+	public function badge_field_callback() {
+		$options = get_option( 'cwaw_settings', array() );
+		$value = isset( $options['badge'] ) ? $options['badge'] : '';
+		echo '<input type="text" name="cwaw_settings[badge]" value="' . esc_attr( $value ) . '" class="small-text" placeholder="1" maxlength="3" />';
+		echo '<p class="description">' . esc_html__( 'Optional badge text/number displayed on the button. Leave empty to hide.', 'cideapps-wa-widget' ) . '</p>';
+	}
+
 	public function cta_field_callback() {
 		$options = get_option( 'cwaw_settings', array() );
 		$value = isset( $options['cta'] ) ? $options['cta'] : '';
@@ -326,8 +342,9 @@ class Cideapps_Wa_Widget_Admin {
 
 	public function button_text_field_callback() {
 		$options = get_option( 'cwaw_settings', array() );
-		$value = isset( $options['button_text'] ) ? $options['button_text'] : __( 'Iniciar conversación', 'cideapps-wa-widget' );
-		echo '<input type="text" name="cwaw_settings[button_text]" value="' . esc_attr( $value ) . '" class="regular-text" />';
+		$value = isset( $options['button_text'] ) ? $options['button_text'] : __( 'Enviar', 'cideapps-wa-widget' );
+		echo '<input type="text" name="cwaw_settings[button_text]" value="' . esc_attr( $value ) . '" class="regular-text" placeholder="' . esc_attr__( 'Enviar', 'cideapps-wa-widget' ) . '" />';
+		echo '<p class="description">' . esc_html__( 'Text displayed on the send button in the chat window.', 'cideapps-wa-widget' ) . '</p>';
 	}
 
 	public function theme_color_field_callback() {
