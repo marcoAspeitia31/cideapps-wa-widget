@@ -2,3 +2,269 @@
  * All of the CSS for your public-facing functionality should be
  * included in this file.
  */
+
+/* Widget Container */
+.cwaw-widget {
+	position: fixed;
+	bottom: 20px;
+	z-index: 999999;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+}
+
+.cwaw-widget.cwaw-position-right {
+	right: 20px;
+}
+
+.cwaw-widget.cwaw-position-left {
+	left: 20px;
+}
+
+/* Button Wrapper */
+.cwaw-button-wrapper {
+	position: relative;
+	margin-bottom: 15px;
+}
+
+/* Floating Button */
+.cwaw-button {
+	width: 60px;
+	height: 60px;
+	border-radius: 50%;
+	border: none;
+	background-color: var(--cwaw-theme-color, #25d366);
+	color: white;
+	cursor: pointer;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: transform 0.3s ease, box-shadow 0.3s ease;
+	padding: 0;
+	position: relative;
+}
+
+.cwaw-button:hover {
+	transform: scale(1.1);
+	box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+}
+
+.cwaw-button:focus {
+	outline: 2px solid rgba(255, 255, 255, 0.5);
+	outline-offset: 2px;
+}
+
+.cwaw-button svg {
+	width: 32px;
+	height: 32px;
+	fill: currentColor;
+}
+
+.cwaw-button img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	border-radius: 50%;
+}
+
+/* Tooltip */
+.cwaw-tooltip {
+	position: absolute;
+	white-space: nowrap;
+	background-color: rgba(0, 0, 0, 0.8);
+	color: white;
+	padding: 8px 12px;
+	border-radius: 4px;
+	font-size: 14px;
+	pointer-events: none;
+	opacity: 0;
+	transition: opacity 0.3s ease, transform 0.3s ease;
+	bottom: 50%;
+	transform: translateY(50%);
+}
+
+.cwaw-position-right .cwaw-tooltip {
+	right: 75px;
+}
+
+.cwaw-position-left .cwaw-tooltip {
+	left: 75px;
+}
+
+.cwaw-tooltip::after {
+	content: '';
+	position: absolute;
+	width: 0;
+	height: 0;
+	border-style: solid;
+	top: 50%;
+	transform: translateY(-50%);
+}
+
+.cwaw-position-right .cwaw-tooltip::after {
+	right: -6px;
+	border-width: 6px 0 6px 6px;
+	border-color: transparent transparent transparent rgba(0, 0, 0, 0.8);
+}
+
+.cwaw-position-left .cwaw-tooltip::after {
+	left: -6px;
+	border-width: 6px 6px 6px 0;
+	border-color: transparent rgba(0, 0, 0, 0.8) transparent transparent;
+}
+
+.cwaw-button-wrapper:hover .cwaw-tooltip {
+	opacity: 1;
+}
+
+/* Chat Window */
+.cwaw-chat-window {
+	position: absolute;
+	bottom: 85px;
+	width: 320px;
+	max-width: calc(100vw - 40px);
+	background: white;
+	border-radius: 10px;
+	box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+	display: none;
+	overflow: hidden;
+	opacity: 0;
+	transform: translateY(10px);
+	transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.cwaw-position-right .cwaw-chat-window {
+	right: 0;
+}
+
+.cwaw-position-left .cwaw-chat-window {
+	left: 0;
+}
+
+.cwaw-chat-window.cwaw-open {
+	display: block;
+	opacity: 1;
+	transform: translateY(0);
+}
+
+/* Chat Header */
+.cwaw-chat-header {
+	background-color: var(--cwaw-theme-color, #25d366);
+	color: white;
+	padding: 15px 20px;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.cwaw-chat-header-content {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	width: 100%;
+}
+
+.cwaw-chat-header strong {
+	font-size: 16px;
+	font-weight: 600;
+}
+
+.cwaw-close {
+	background: none;
+	border: none;
+	color: white;
+	font-size: 28px;
+	line-height: 1;
+	cursor: pointer;
+	padding: 0;
+	width: 30px;
+	height: 30px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 50%;
+	transition: background-color 0.2s ease;
+}
+
+.cwaw-close:hover {
+	background-color: rgba(255, 255, 255, 0.2);
+}
+
+.cwaw-close:focus {
+	outline: 2px solid rgba(255, 255, 255, 0.5);
+	outline-offset: 2px;
+}
+
+/* Chat Body */
+.cwaw-chat-body {
+	padding: 20px;
+}
+
+.cwaw-chat-message {
+	background-color: #f1f1f1;
+	padding: 12px 16px;
+	border-radius: 8px;
+	margin-bottom: 15px;
+	font-size: 14px;
+	line-height: 1.5;
+	color: #333;
+}
+
+.cwaw-whatsapp-button {
+	display: block;
+	width: 100%;
+	padding: 12px 20px;
+	background-color: var(--cwaw-theme-color, #25d366);
+	color: white;
+	text-align: center;
+	text-decoration: none;
+	border-radius: 6px;
+	font-weight: 600;
+	font-size: 14px;
+	transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.cwaw-whatsapp-button:hover {
+	background-color: var(--cwaw-theme-color, #25d366);
+	opacity: 0.9;
+	transform: translateY(-1px);
+	color: white;
+}
+
+.cwaw-whatsapp-button:focus {
+	outline: 2px solid var(--cwaw-theme-color, #25d366);
+	outline-offset: 2px;
+}
+
+/* Animaciones para el botón con delay */
+.cwaw-widget.cwaw-delayed .cwaw-button-wrapper {
+	opacity: 0;
+	transform: scale(0.5);
+	animation: cwaw-button-appear 0.5s ease forwards;
+}
+
+@keyframes cwaw-button-appear {
+	to {
+		opacity: 1;
+		transform: scale(1);
+	}
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+	.cwaw-chat-window {
+		width: calc(100vw - 40px);
+		max-width: 320px;
+	}
+
+	.cwaw-widget {
+		bottom: 15px;
+	}
+
+	.cwaw-widget.cwaw-position-right {
+		right: 15px;
+	}
+
+	.cwaw-widget.cwaw-position-left {
+		left: 15px;
+	}
+}

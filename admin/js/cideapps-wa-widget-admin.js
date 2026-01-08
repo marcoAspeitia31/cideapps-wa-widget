@@ -1,32 +1,60 @@
 (function( $ ) {
 	'use strict';
 
-	/**
-	 * All of the code for your admin-facing JavaScript source
-	 * should reside in this file.
-	 *
-	 * Note: It has been assumed you will write jQuery code here, so the
-	 * $ function reference has been prepared for usage within the scope
-	 * of this function.
-	 *
-	 * This enables you to define handlers, for when the DOM is ready:
-	 *
-	 * $(function() {
-	 *
-	 * });
-	 *
-	 * When the window is loaded:
-	 *
-	 * $( window ).load(function() {
-	 *
-	 * });
-	 *
-	 * ...and/or other possibilities.
-	 *
-	 * Ideally, it is not considered best practise to attach more than a
-	 * single DOM-ready or window-load handler for a particular page.
-	 * Although scripts in the WordPress core, Plugins and Themes may be
-	 * practising this, we should strive to set a better example in our own work.
-	 */
+	$(document).ready(function() {
+		// Inicializar color picker
+		if ($.fn.wpColorPicker) {
+			$('.cwaw-color-picker').wpColorPicker();
+		}
+
+		// Media uploader para imagen del botón
+		var mediaUploader;
+		var imageIdField = $('#cwaw_image_id');
+		var imagePreview = $('#cwaw_image_preview');
+		var removeButton = $('.cwaw-remove-image');
+
+		// Seleccionar imagen
+		$('.cwaw-select-image').on('click', function(e) {
+			e.preventDefault();
+
+			// Si el media uploader ya existe, reabrirlo
+			if (mediaUploader) {
+				mediaUploader.open();
+				return;
+			}
+
+			// Crear el media uploader
+			mediaUploader = wp.media({
+				title: $(this).data('uploader-title') || 'Select Image',
+				button: {
+					text: 'Use this image'
+				},
+				multiple: false
+			});
+
+			// Cuando se selecciona una imagen
+			mediaUploader.on('select', function() {
+				var attachment = mediaUploader.state().get('selection').first().toJSON();
+				imageIdField.val(attachment.id);
+				
+				// Mostrar preview
+				imagePreview.html('<img src="' + attachment.sizes.thumbnail.url + '" style="max-width: 150px; height: auto; display: block; margin-bottom: 10px;" />');
+				
+				// Mostrar botón de eliminar
+				removeButton.show();
+			});
+
+			// Abrir el media uploader
+			mediaUploader.open();
+		});
+
+		// Remover imagen
+		$('.cwaw-remove-image').on('click', function(e) {
+			e.preventDefault();
+			imageIdField.val('');
+			imagePreview.html('');
+			$(this).hide();
+		});
+	});
 
 })( jQuery );

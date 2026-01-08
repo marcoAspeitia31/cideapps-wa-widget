@@ -2,3 +2,44 @@
  * All of the CSS for your admin-specific functionality should be
  * included in this file.
  */
+
+/* Settings page styles */
+.cwaw-image-upload {
+	margin: 10px 0;
+}
+
+#cwaw_image_preview {
+	margin-bottom: 10px;
+}
+
+#cwaw_image_preview img {
+	max-width: 150px;
+	height: auto;
+	display: block;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+}
+
+.cwaw-select-image,
+.cwaw-remove-image {
+	margin-right: 10px;
+}
+
+/* Color picker wrapper */
+.cwaw-color-picker {
+	width: 80px;
+}
+
+/* Form sections */
+.cwaw-button_section,
+.cwaw-chat_window_section {
+	margin-top: 20px;
+}
+
+.form-table th {
+	padding: 20px 10px 20px 0;
+}
+
+.form-table td {
+	padding: 15px 10px;
+}

@@ -11,6 +11,26 @@
  * @package    Cideapps_Wa_Widget
  * @subpackage Cideapps_Wa_Widget/admin/partials
  */
+
+// Si no hay permisos, salir
+if ( ! current_user_can( 'manage_options' ) ) {
+	return;
+}
+
+// Mostrar mensajes de actualización
+if ( isset( $_GET['settings-updated'] ) ) {
+	add_settings_error( 'cwaw_messages', 'cwaw_message', __( 'Settings Saved', 'cideapps-wa-widget' ), 'updated' );
+}
+settings_errors( 'cwaw_messages' );
 ?>
 
-<!-- This file should primarily consist of HTML with a little bit of PHP. -->
+<div class="wrap">
+	<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
+	<form action="options.php" method="post">
+		<?php
+		settings_fields( 'cwaw_settings' );
+		do_settings_sections( $plugin_name );
+		submit_button( __( 'Save Settings', 'cideapps-wa-widget' ) );
+		?>
+	</form>
+</div>
