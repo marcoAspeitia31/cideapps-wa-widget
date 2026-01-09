@@ -92,10 +92,26 @@ class Cideapps_Wa_Widget_Public {
 			$current_url = home_url( sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ) );
 		}
 
+		// Resolver avatar URL
+		$agent_avatar_id = isset( $settings['agent_avatar_id'] ) ? absint( $settings['agent_avatar_id'] ) : 0;
+		$agent_avatar_url = $agent_avatar_id > 0 ? wp_get_attachment_image_url( $agent_avatar_id, 'thumbnail' ) : '';
+
+		// Resolver background URL
+		$chat_bg_mode = isset( $settings['chat_bg_mode'] ) ? $settings['chat_bg_mode'] : 'plugin_default';
+		$chat_bg_url = '';
+		if ( $chat_bg_mode === 'plugin_default' ) {
+			$chat_bg_url = plugin_dir_url( __FILE__ ) . 'img/background-whatsapp.jpg';
+		} elseif ( $chat_bg_mode === 'custom' ) {
+			$chat_bg_image_id = isset( $settings['chat_bg_image_id'] ) ? absint( $settings['chat_bg_image_id'] ) : 0;
+			if ( $chat_bg_image_id > 0 ) {
+				$chat_bg_url = wp_get_attachment_image_url( $chat_bg_image_id, 'full' );
+			}
+		}
+
 		// Localizar script con configuraciones
 		wp_localize_script( $this->plugin_name, 'cwawSettings', array(
 			'telephone' => isset( $settings['telephone'] ) ? $settings['telephone'] : '',
-			'message' => isset( $settings['message'] ) ? $settings['message'] : '',
+			'messageTemplate' => isset( $settings['message'] ) ? $settings['message'] : '',
 			'image' => isset( $settings['image'] ) ? $settings['image'] : 0,
 			'imageUrl' => isset( $settings['image'] ) && $settings['image'] > 0 ? wp_get_attachment_image_url( $settings['image'], 'full' ) : '',
 			'tooltip' => isset( $settings['tooltip'] ) ? $settings['tooltip'] : '',
@@ -105,6 +121,11 @@ class Cideapps_Wa_Widget_Public {
 			'cta' => isset( $settings['cta'] ) ? $settings['cta'] : '',
 			'buttonText' => isset( $settings['button_text'] ) ? $settings['button_text'] : __( 'Enviar', 'cideapps-wa-widget' ),
 			'themeColor' => isset( $settings['theme_color'] ) ? $settings['theme_color'] : '#25d366',
+			'agentName' => isset( $settings['agent_name'] ) ? $settings['agent_name'] : __( 'Soporte', 'cideapps-wa-widget' ),
+			'agentStatus' => isset( $settings['agent_status'] ) ? $settings['agent_status'] : __( 'Online', 'cideapps-wa-widget' ),
+			'agentAvatarUrl' => $agent_avatar_url,
+			'chatPlaceholder' => isset( $settings['chat_placeholder'] ) ? $settings['chat_placeholder'] : __( 'Enter your message...', 'cideapps-wa-widget' ),
+			'chatBgUrl' => $chat_bg_url,
 			'siteName' => get_bloginfo( 'name' ),
 			'currentUrl' => esc_url_raw( $current_url ),
 			'currentTitle' => wp_get_document_title(),
@@ -128,9 +149,6 @@ class Cideapps_Wa_Widget_Public {
 		$tooltip = isset( $settings['tooltip'] ) ? $settings['tooltip'] : '';
 		$badge = isset( $settings['badge'] ) ? $settings['badge'] : '';
 		$position = isset( $settings['position'] ) ? esc_attr( $settings['position'] ) : 'right';
-		$cta = isset( $settings['cta'] ) ? $settings['cta'] : '';
-		$button_text = isset( $settings['button_text'] ) ? esc_html( $settings['button_text'] ) : __( 'Enviar', 'cideapps-wa-widget' );
-		$default_message = isset( $settings['message'] ) ? esc_attr( $settings['message'] ) : '';
 		$theme_color = isset( $settings['theme_color'] ) ? esc_attr( $settings['theme_color'] ) : '#25d366';
 		$image_id = isset( $settings['image'] ) ? absint( $settings['image'] ) : 0;
 		$image_url = $image_id > 0 ? wp_get_attachment_image_url( $image_id, 'full' ) : '';
@@ -154,30 +172,41 @@ class Cideapps_Wa_Widget_Public {
 					<?php endif; ?>
 				</button>
 			</div>
-			<div id="cwaw-chat-window" class="cwaw-chat-window">
-				<div class="cwaw-chat-header">
-					<div class="cwaw-chat-header-content">
-						<strong><?php esc_html_e( 'WhatsApp', 'cideapps-wa-widget' ); ?></strong>
-						<button id="cwaw-close" class="cwaw-close" aria-label="<?php esc_attr_e( 'Close chat', 'cideapps-wa-widget' ); ?>">×</button>
+
+			<div class="cwaw-window" role="dialog" aria-modal="true" aria-label="WhatsApp chat window" hidden>
+				<button class="cwaw-window__close" type="button" aria-label="Close chat window">×</button>
+
+				<header class="cwaw-window__header">
+					<div class="cwaw-window__avatar">
+						<img class="cwaw-window__avatar-img" src="" alt="Agent avatar" loading="lazy" />
+						<span class="cwaw-window__status-dot" aria-hidden="true"></span>
 					</div>
-				</div>
-				<div class="cwaw-chat-body">
-					<?php if ( ! empty( $cta ) ) : ?>
-						<div class="cwaw-chat-message"><?php echo wp_kses_post( $cta ); ?></div>
-					<?php endif; ?>
-					<div class="cwaw-chat-input-wrapper">
-						<textarea 
-							id="cwaw-message-input" 
-							class="cwaw-message-input" 
-							placeholder="<?php esc_attr_e( 'Escribe tu mensaje...', 'cideapps-wa-widget' ); ?>"
-							rows="3"
-							data-default-message="<?php echo esc_attr( $default_message ); ?>"
-						></textarea>
-						<button id="cwaw-send-button" class="cwaw-whatsapp-button" type="button">
-							<?php echo esc_html( $button_text ); ?>
-						</button>
+
+					<div class="cwaw-window__info">
+						<div class="cwaw-window__name"></div>
+						<div class="cwaw-window__status"></div>
 					</div>
-				</div>
+				</header>
+
+				<main class="cwaw-window__chat">
+					<div class="cwaw-window__time" aria-hidden="true"></div>
+
+					<div class="cwaw-bubble cwaw-bubble--incoming">
+						<div class="cwaw-bubble__content"></div>
+					</div>
+				</main>
+
+				<footer class="cwaw-window__footer">
+					<label class="cwaw-field" aria-label="Message">
+						<textarea class="cwaw-field__textarea" rows="1" placeholder=""></textarea>
+					</label>
+
+					<button class="cwaw-send" type="button" aria-label="Send message">
+						<svg viewBox="0 0 28 28" width="18" height="18" aria-hidden="true">
+							<path d="M9.166 7.5a.714.714 0 0 0-.998.83l1.152 4.304a.571.571 0 0 0 .47.418l5.649.807c.163.023.163.26 0 .283l-5.648.806a.572.572 0 0 0-.47.418l-1.153 4.307a.714.714 0 0 0 .998.83l12.284-5.857a.715.715 0 0 0 0-1.29L9.166 7.5Z"></path>
+						</svg>
+					</button>
+				</footer>
 			</div>
 		</div>
 		<?php

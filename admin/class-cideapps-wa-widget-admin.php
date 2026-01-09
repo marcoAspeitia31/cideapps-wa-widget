@@ -230,6 +230,54 @@ class Cideapps_Wa_Widget_Admin {
 			$this->plugin_name,
 			'cwaw_chat_window_section'
 		);
+
+		add_settings_field(
+			'agent_name',
+			__( 'Agent Name', 'cideapps-wa-widget' ),
+			array( $this, 'agent_name_field_callback' ),
+			$this->plugin_name,
+			'cwaw_chat_window_section'
+		);
+
+		add_settings_field(
+			'agent_status',
+			__( 'Agent Status', 'cideapps-wa-widget' ),
+			array( $this, 'agent_status_field_callback' ),
+			$this->plugin_name,
+			'cwaw_chat_window_section'
+		);
+
+		add_settings_field(
+			'agent_avatar_id',
+			__( 'Agent Avatar', 'cideapps-wa-widget' ),
+			array( $this, 'agent_avatar_field_callback' ),
+			$this->plugin_name,
+			'cwaw_chat_window_section'
+		);
+
+		add_settings_field(
+			'chat_placeholder',
+			__( 'Chat Placeholder', 'cideapps-wa-widget' ),
+			array( $this, 'chat_placeholder_field_callback' ),
+			$this->plugin_name,
+			'cwaw_chat_window_section'
+		);
+
+		add_settings_field(
+			'chat_bg_mode',
+			__( 'Chat Background Mode', 'cideapps-wa-widget' ),
+			array( $this, 'chat_bg_mode_field_callback' ),
+			$this->plugin_name,
+			'cwaw_chat_window_section'
+		);
+
+		add_settings_field(
+			'chat_bg_image_id',
+			__( 'Custom Chat Background', 'cideapps-wa-widget' ),
+			array( $this, 'chat_bg_image_field_callback' ),
+			$this->plugin_name,
+			'cwaw_chat_window_section'
+		);
 	}
 
 	/**
@@ -253,6 +301,12 @@ class Cideapps_Wa_Widget_Admin {
 		$sanitized['cta'] = isset( $input['cta'] ) ? wp_kses_post( $input['cta'] ) : '';
 		$sanitized['button_text'] = isset( $input['button_text'] ) ? sanitize_text_field( $input['button_text'] ) : '';
 		$sanitized['theme_color'] = isset( $input['theme_color'] ) ? sanitize_hex_color( $input['theme_color'] ) : '#25d366';
+		$sanitized['agent_name'] = isset( $input['agent_name'] ) ? sanitize_text_field( $input['agent_name'] ) : __( 'Soporte', 'cideapps-wa-widget' );
+		$sanitized['agent_status'] = isset( $input['agent_status'] ) ? sanitize_text_field( $input['agent_status'] ) : __( 'Online', 'cideapps-wa-widget' );
+		$sanitized['agent_avatar_id'] = isset( $input['agent_avatar_id'] ) ? absint( $input['agent_avatar_id'] ) : 0;
+		$sanitized['chat_placeholder'] = isset( $input['chat_placeholder'] ) ? sanitize_text_field( $input['chat_placeholder'] ) : __( 'Enter your message...', 'cideapps-wa-widget' );
+		$sanitized['chat_bg_mode'] = isset( $input['chat_bg_mode'] ) && in_array( $input['chat_bg_mode'], array( 'plugin_default', 'custom' ), true ) ? $input['chat_bg_mode'] : 'plugin_default';
+		$sanitized['chat_bg_image_id'] = isset( $input['chat_bg_image_id'] ) ? absint( $input['chat_bg_image_id'] ) : 0;
 
 		return $sanitized;
 	}
@@ -351,6 +405,73 @@ class Cideapps_Wa_Widget_Admin {
 		$options = get_option( 'cwaw_settings', array() );
 		$value = isset( $options['theme_color'] ) ? $options['theme_color'] : '#25d366';
 		echo '<input type="text" name="cwaw_settings[theme_color]" value="' . esc_attr( $value ) . '" class="cwaw-color-picker" data-default-color="#25d366" />';
+	}
+
+	public function agent_name_field_callback() {
+		$options = get_option( 'cwaw_settings', array() );
+		$value = isset( $options['agent_name'] ) ? $options['agent_name'] : __( 'Soporte', 'cideapps-wa-widget' );
+		echo '<input type="text" name="cwaw_settings[agent_name]" value="' . esc_attr( $value ) . '" class="regular-text" />';
+		echo '<p class="description">' . esc_html__( 'Name displayed in the chat header.', 'cideapps-wa-widget' ) . '</p>';
+	}
+
+	public function agent_status_field_callback() {
+		$options = get_option( 'cwaw_settings', array() );
+		$value = isset( $options['agent_status'] ) ? $options['agent_status'] : __( 'Online', 'cideapps-wa-widget' );
+		echo '<input type="text" name="cwaw_settings[agent_status]" value="' . esc_attr( $value ) . '" class="regular-text" placeholder="' . esc_attr__( 'Online', 'cideapps-wa-widget' ) . '" />';
+		echo '<p class="description">' . esc_html__( 'Status displayed below the agent name.', 'cideapps-wa-widget' ) . '</p>';
+	}
+
+	public function agent_avatar_field_callback() {
+		$options = get_option( 'cwaw_settings', array() );
+		$avatar_id = isset( $options['agent_avatar_id'] ) ? absint( $options['agent_avatar_id'] ) : 0;
+		$avatar_url = $avatar_id ? wp_get_attachment_image_url( $avatar_id, 'thumbnail' ) : '';
+
+		echo '<div class="cwaw-image-upload">';
+		echo '<input type="hidden" name="cwaw_settings[agent_avatar_id]" id="cwaw_agent_avatar_id" value="' . esc_attr( $avatar_id ) . '" />';
+		echo '<div id="cwaw_agent_avatar_preview">';
+		if ( $avatar_url ) {
+			echo '<img src="' . esc_url( $avatar_url ) . '" style="max-width: 80px; height: 80px; width: 80px; object-fit: cover; border-radius: 50%; display: block; margin-bottom: 10px; border: 2px solid #ddd;" />';
+		}
+		echo '</div>';
+		echo '<button type="button" class="button cwaw-select-avatar" data-uploader-title="' . esc_attr__( 'Select Agent Avatar', 'cideapps-wa-widget' ) . '">' . esc_html__( 'Select Avatar', 'cideapps-wa-widget' ) . '</button> ';
+		echo '<button type="button" class="button cwaw-remove-avatar" ' . ( $avatar_id ? '' : 'style="display:none;"' ) . '>' . esc_html__( 'Remove Avatar', 'cideapps-wa-widget' ) . '</button>';
+		echo '<p class="description">' . esc_html__( 'Agent avatar displayed in the chat header. If empty, initials will be shown.', 'cideapps-wa-widget' ) . '</p>';
+		echo '</div>';
+	}
+
+	public function chat_placeholder_field_callback() {
+		$options = get_option( 'cwaw_settings', array() );
+		$value = isset( $options['chat_placeholder'] ) ? $options['chat_placeholder'] : __( 'Enter your message...', 'cideapps-wa-widget' );
+		echo '<input type="text" name="cwaw_settings[chat_placeholder]" value="' . esc_attr( $value ) . '" class="regular-text" />';
+		echo '<p class="description">' . esc_html__( 'Placeholder text in the message input field.', 'cideapps-wa-widget' ) . '</p>';
+	}
+
+	public function chat_bg_mode_field_callback() {
+		$options = get_option( 'cwaw_settings', array() );
+		$value = isset( $options['chat_bg_mode'] ) ? $options['chat_bg_mode'] : 'plugin_default';
+		echo '<select name="cwaw_settings[chat_bg_mode]" id="cwaw_chat_bg_mode">';
+		echo '<option value="plugin_default" ' . selected( $value, 'plugin_default', false ) . '>' . esc_html__( 'Plugin Default', 'cideapps-wa-widget' ) . '</option>';
+		echo '<option value="custom" ' . selected( $value, 'custom', false ) . '>' . esc_html__( 'Custom Image', 'cideapps-wa-widget' ) . '</option>';
+		echo '</select>';
+		echo '<p class="description">' . esc_html__( 'Choose between default background or upload a custom image.', 'cideapps-wa-widget' ) . '</p>';
+	}
+
+	public function chat_bg_image_field_callback() {
+		$options = get_option( 'cwaw_settings', array() );
+		$bg_image_id = isset( $options['chat_bg_image_id'] ) ? absint( $options['chat_bg_image_id'] ) : 0;
+		$bg_mode = isset( $options['chat_bg_mode'] ) ? $options['chat_bg_mode'] : 'plugin_default';
+		$bg_image_url = $bg_image_id ? wp_get_attachment_image_url( $bg_image_id, 'full' ) : '';
+
+		echo '<div class="cwaw-image-upload" id="cwaw_chat_bg_wrapper" style="' . ( $bg_mode === 'custom' ? '' : 'display:none;' ) . '">';
+		echo '<input type="hidden" name="cwaw_settings[chat_bg_image_id]" id="cwaw_chat_bg_image_id" value="' . esc_attr( $bg_image_id ) . '" />';
+		echo '<div id="cwaw_chat_bg_preview">';
+		if ( $bg_image_url ) {
+			echo '<img src="' . esc_url( $bg_image_url ) . '" style="max-width: 200px; height: auto; display: block; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 4px;" />';
+		}
+		echo '</div>';
+		echo '<button type="button" class="button cwaw-select-chat-bg" data-uploader-title="' . esc_attr__( 'Select Chat Background', 'cideapps-wa-widget' ) . '">' . esc_html__( 'Select Background', 'cideapps-wa-widget' ) . '</button> ';
+		echo '<button type="button" class="button cwaw-remove-chat-bg" ' . ( $bg_image_id ? '' : 'style="display:none;"' ) . '>' . esc_html__( 'Remove Background', 'cideapps-wa-widget' ) . '</button>';
+		echo '</div>';
 	}
 
 }
