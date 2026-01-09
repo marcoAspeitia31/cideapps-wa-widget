@@ -72,24 +72,24 @@
 	function init() {
 		var widget = document.getElementById( 'cwaw-widget' );
 		var button = document.getElementById( 'cwaw-button' );
-		var window = document.querySelector( '.cwaw-window' );
+		var chatWindow = document.querySelector( '.cwaw-window' );
 		var closeButton = document.querySelector( '.cwaw-window__close' );
 		var messageInput = document.querySelector( '.cwaw-field__textarea' );
 		var sendButton = document.querySelector( '.cwaw-send' );
 
-		if ( ! widget || ! button || ! window ) {
+		if ( ! widget || ! button || ! chatWindow ) {
 			return;
 		}
 
 		// Poblar datos dinámicos
-		var agentNameEl = window.querySelector( '.cwaw-window__name' );
-		var agentStatusEl = window.querySelector( '.cwaw-window__status' );
-		var agentAvatarEl = window.querySelector( '.cwaw-window__avatar-img' );
+		var agentNameEl = chatWindow.querySelector( '.cwaw-window__name' );
+		var agentStatusEl = chatWindow.querySelector( '.cwaw-window__status' );
+		var agentAvatarEl = chatWindow.querySelector( '.cwaw-window__avatar-img' );
 		var chatPlaceholderEl = messageInput;
-		var bubbleContentEl = window.querySelector( '.cwaw-bubble__content' );
-		var headerEl = window.querySelector( '.cwaw-window__header' );
-		var chatEl = window.querySelector( '.cwaw-window__chat' );
-		var timeEl = window.querySelector( '.cwaw-window__time' );
+		var bubbleContentEl = chatWindow.querySelector( '.cwaw-bubble__content' );
+		var headerEl = chatWindow.querySelector( '.cwaw-window__header' );
+		var chatEl = chatWindow.querySelector( '.cwaw-window__chat' );
+		var timeEl = chatWindow.querySelector( '.cwaw-window__time' );
 
 		if ( agentNameEl ) {
 			agentNameEl.textContent = settings.agentName || 'Soporte';
@@ -182,11 +182,11 @@
 
 		// Abrir/cerrar ventana de chat
 		function toggleChatWindow() {
-			var wasHidden = window.hasAttribute( 'hidden' );
+			var wasHidden = chatWindow.hasAttribute( 'hidden' );
 			
 			if ( wasHidden ) {
-				window.removeAttribute( 'hidden' );
-				window.classList.add( 'cwaw-open' );
+				chatWindow.removeAttribute( 'hidden' );
+				chatWindow.classList.add( 'cwaw-open' );
 				
 				// Enfocar input cuando se abre
 				setTimeout( function() {
@@ -196,12 +196,12 @@
 					}
 				}, 150 );
 			} else {
-				window.setAttribute( 'hidden', '' );
-				window.classList.remove( 'cwaw-open' );
+				chatWindow.setAttribute( 'hidden', '' );
+				chatWindow.classList.remove( 'cwaw-open' );
 			}
 			
 			// Guardar estado
-			localStorage.setItem( 'cwaw_chat_open', window.hasAttribute( 'hidden' ) ? 'false' : 'true' );
+			localStorage.setItem( 'cwaw_chat_open', chatWindow.hasAttribute( 'hidden' ) ? 'false' : 'true' );
 		}
 
 		// Event listeners
@@ -215,18 +215,18 @@
 		if ( closeButton ) {
 			closeButton.addEventListener( 'click', function( e ) {
 				e.preventDefault();
-				window.setAttribute( 'hidden', '' );
-				window.classList.remove( 'cwaw-open' );
+				chatWindow.setAttribute( 'hidden', '' );
+				chatWindow.classList.remove( 'cwaw-open' );
 				localStorage.setItem( 'cwaw_chat_open', 'false' );
 			} );
 		}
 
 		// Cerrar al hacer click fuera de la ventana
 		document.addEventListener( 'click', function( e ) {
-			if ( ! window.hasAttribute( 'hidden' ) ) {
-				if ( ! window.contains( e.target ) && ! button.contains( e.target ) ) {
-					window.setAttribute( 'hidden', '' );
-					window.classList.remove( 'cwaw-open' );
+			if ( ! chatWindow.hasAttribute( 'hidden' ) ) {
+				if ( ! chatWindow.contains( e.target ) && ! button.contains( e.target ) ) {
+					chatWindow.setAttribute( 'hidden', '' );
+					chatWindow.classList.remove( 'cwaw-open' );
 					localStorage.setItem( 'cwaw_chat_open', 'false' );
 				}
 			}
@@ -234,9 +234,9 @@
 
 		// Manejar tecla Escape para cerrar
 		document.addEventListener( 'keydown', function( e ) {
-			if ( e.key === 'Escape' && ! window.hasAttribute( 'hidden' ) ) {
-				window.setAttribute( 'hidden', '' );
-				window.classList.remove( 'cwaw-open' );
+			if ( e.key === 'Escape' && ! chatWindow.hasAttribute( 'hidden' ) ) {
+				chatWindow.setAttribute( 'hidden', '' );
+				chatWindow.classList.remove( 'cwaw-open' );
 				localStorage.setItem( 'cwaw_chat_open', 'false' );
 			}
 		} );

@@ -295,7 +295,7 @@ class Cideapps_Wa_Widget_Admin {
 		$sanitized['tooltip'] = isset( $input['tooltip'] ) ? sanitize_text_field( $input['tooltip'] ) : '';
 		$sanitized['position'] = isset( $input['position'] ) && in_array( $input['position'], array( 'left', 'right' ), true ) ? $input['position'] : 'right';
 		$sanitized['button_delay'] = isset( $input['button_delay'] ) ? intval( $input['button_delay'] ) : 0;
-		$sanitized['badge'] = isset( $input['badge'] ) ? sanitize_text_field( $input['badge'] ) : '';
+		$sanitized['badge'] = isset( $input['badge'] ) && $input['badge'] !== '' ? absint( $input['badge'] ) : '';
 
 		// Chat Window section
 		$sanitized['cta'] = isset( $input['cta'] ) ? wp_kses_post( $input['cta'] ) : '';
@@ -382,9 +382,9 @@ class Cideapps_Wa_Widget_Admin {
 
 	public function badge_field_callback() {
 		$options = get_option( 'cwaw_settings', array() );
-		$value = isset( $options['badge'] ) ? $options['badge'] : '';
-		echo '<input type="text" name="cwaw_settings[badge]" value="' . esc_attr( $value ) . '" class="small-text" placeholder="1" maxlength="3" />';
-		echo '<p class="description">' . esc_html__( 'Optional badge text/number displayed on the button. Leave empty to hide.', 'cideapps-wa-widget' ) . '</p>';
+		$value = isset( $options['badge'] ) ? absint( $options['badge'] ) : '';
+		echo '<input type="number" name="cwaw_settings[badge]" value="' . esc_attr( $value ) . '" class="small-text" placeholder="1" min="0" max="999" step="1" />';
+		echo '<p class="description">' . esc_html__( 'Optional badge number displayed on the button (0-999). Leave empty to hide.', 'cideapps-wa-widget' ) . '</p>';
 	}
 
 	public function cta_field_callback() {
