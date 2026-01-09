@@ -122,29 +122,33 @@ class Cideapps_Wa_Widget_Public {
 		$full_number = $telephone ? $dial_code . $telephone : '';
 
 		// Localizar script con configuraciones
+		// Nota: wp_localize_script escapa automáticamente los valores usando wp_json_encode(),
+		// pero es mejor asegurar que los datos estén correctamente sanitizados antes de pasarlos
 		wp_localize_script( $this->plugin_name, 'cwawSettings', array(
-			'telephone' => $telephone,
-			'countryCode' => $country_code_iso,
-			'dialCode' => $dial_code,
-			'fullNumber' => $full_number,
-			'messageTemplate' => isset( $settings['message'] ) ? $settings['message'] : '',
-			'image' => isset( $settings['image'] ) ? $settings['image'] : 0,
-			'imageUrl' => isset( $settings['image'] ) && $settings['image'] > 0 ? wp_get_attachment_image_url( $settings['image'], 'full' ) : '',
-			'tooltip' => isset( $settings['tooltip'] ) ? $settings['tooltip'] : '',
-			'badge' => isset( $settings['badge'] ) ? $settings['badge'] : '',
-			'position' => isset( $settings['position'] ) ? $settings['position'] : 'right',
+			'telephone' => preg_replace( '/[^0-9]/', '', $telephone ),
+			'countryCode' => sanitize_text_field( $country_code_iso ),
+			'dialCode' => preg_replace( '/[^0-9]/', '', $dial_code ),
+			'fullNumber' => preg_replace( '/[^0-9]/', '', $full_number ),
+			// messageTemplate: sanitizado con wp_kses_post en sanitize_settings, pero no contiene HTML peligroso aquí
+			'messageTemplate' => isset( $settings['message'] ) ? wp_strip_all_tags( $settings['message'] ) : '',
+			'image' => isset( $settings['image'] ) ? absint( $settings['image'] ) : 0,
+			'imageUrl' => isset( $settings['image'] ) && $settings['image'] > 0 ? esc_url_raw( wp_get_attachment_image_url( $settings['image'], 'full' ) ) : '',
+			'tooltip' => isset( $settings['tooltip'] ) ? sanitize_text_field( $settings['tooltip'] ) : '',
+			'badge' => isset( $settings['badge'] ) && $settings['badge'] !== '' ? absint( $settings['badge'] ) : '',
+			'position' => isset( $settings['position'] ) && in_array( $settings['position'], array( 'left', 'right' ), true ) ? $settings['position'] : 'right',
 			'buttonDelay' => isset( $settings['button_delay'] ) ? intval( $settings['button_delay'] ) : 0,
-			'cta' => isset( $settings['cta'] ) ? $settings['cta'] : '',
-			'buttonText' => isset( $settings['button_text'] ) ? $settings['button_text'] : __( 'Enviar', 'cideapps-wa-widget' ),
-			'themeColor' => isset( $settings['theme_color'] ) ? $settings['theme_color'] : '#25d366',
-			'agentName' => isset( $settings['agent_name'] ) ? $settings['agent_name'] : __( 'Soporte', 'cideapps-wa-widget' ),
-			'agentStatus' => isset( $settings['agent_status'] ) ? $settings['agent_status'] : __( 'Online', 'cideapps-wa-widget' ),
-			'agentAvatarUrl' => $agent_avatar_url,
-			'chatPlaceholder' => isset( $settings['chat_placeholder'] ) ? $settings['chat_placeholder'] : __( 'Enter your message...', 'cideapps-wa-widget' ),
-			'chatBgUrl' => $chat_bg_url,
-			'siteName' => get_bloginfo( 'name' ),
+			// cta: sanitizado con wp_kses_post en sanitize_settings, pero lo pasamos como texto plano para seguridad
+			'cta' => isset( $settings['cta'] ) ? wp_strip_all_tags( $settings['cta'] ) : '',
+			'buttonText' => isset( $settings['button_text'] ) ? sanitize_text_field( $settings['button_text'] ) : __( 'Enviar', 'cideapps-wa-widget' ),
+			'themeColor' => isset( $settings['theme_color'] ) ? sanitize_hex_color( $settings['theme_color'] ) : '#25d366',
+			'agentName' => isset( $settings['agent_name'] ) ? sanitize_text_field( $settings['agent_name'] ) : __( 'Soporte', 'cideapps-wa-widget' ),
+			'agentStatus' => isset( $settings['agent_status'] ) ? sanitize_text_field( $settings['agent_status'] ) : __( 'Online', 'cideapps-wa-widget' ),
+			'agentAvatarUrl' => esc_url_raw( $agent_avatar_url ),
+			'chatPlaceholder' => isset( $settings['chat_placeholder'] ) ? sanitize_text_field( $settings['chat_placeholder'] ) : __( 'Enter your message...', 'cideapps-wa-widget' ),
+			'chatBgUrl' => esc_url_raw( $chat_bg_url ),
+			'siteName' => sanitize_text_field( get_bloginfo( 'name' ) ),
 			'currentUrl' => esc_url_raw( $current_url ),
-			'currentTitle' => wp_get_document_title(),
+			'currentTitle' => sanitize_text_field( wp_get_document_title() ),
 		) );
 	}
 

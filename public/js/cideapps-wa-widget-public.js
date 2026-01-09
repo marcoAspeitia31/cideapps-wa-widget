@@ -51,9 +51,10 @@
 			fullNumber = dialCode && telephone ? dialCode + telephone : telephone;
 		}
 		
-		// Validar que tengamos un número
+		// Validar que tengamos un número (solo dígitos, mínimo 7 dígitos para ser un número válido)
 		fullNumber = fullNumber.replace( /[^0-9]/g, '' );
-		if ( ! fullNumber ) {
+		if ( ! fullNumber || fullNumber.length < 7 ) {
+			// Número inválido o muy corto, retornar vacío
 			return '';
 		}
 		
@@ -115,10 +116,18 @@
 
 		if ( agentAvatarEl ) {
 			if ( settings.agentAvatarUrl ) {
-				agentAvatarEl.src = settings.agentAvatarUrl;
-				agentAvatarEl.onerror = function() {
-					this.src = createFallbackAvatar( settings.agentName );
-				};
+				// Validar que sea una URL válida antes de usar
+				try {
+					new URL( settings.agentAvatarUrl );
+					agentAvatarEl.src = settings.agentAvatarUrl;
+					agentAvatarEl.onerror = function() {
+						// Fallback a avatar generado si la imagen falla al cargar
+						this.src = createFallbackAvatar( settings.agentName );
+					};
+				} catch ( e ) {
+					// Si la URL no es válida, usar avatar generado
+					agentAvatarEl.src = createFallbackAvatar( settings.agentName );
+				}
 			} else {
 				agentAvatarEl.src = createFallbackAvatar( settings.agentName );
 			}
@@ -129,17 +138,42 @@
 		}
 
 		if ( bubbleContentEl && settings.cta ) {
-			// Respetar saltos de línea en el CTA
-			var ctaText = settings.cta.replace( /\n/g, '<br>' );
-			bubbleContentEl.innerHTML = ctaText;
+			// Limpiar contenido previo
+			bubbleContentEl.textContent = '';
+			
+			// Dividir por saltos de línea y crear nodos de texto con <br> entre ellos
+			var lines = settings.cta.split( '\n' );
+			lines.forEach( function( line, index ) {
+				if ( index > 0 ) {
+					// Agregar salto de línea como elemento <br> de forma segura
+					var br = document.createElement( 'br' );
+					bubbleContentEl.appendChild( br );
+				}
+				// Crear nodo de texto de forma segura (escapa automáticamente)
+				var textNode = document.createTextNode( line );
+				bubbleContentEl.appendChild( textNode );
+			} );
 		}
 
 		if ( headerEl && settings.themeColor ) {
-			headerEl.style.backgroundColor = settings.themeColor;
+			// Validar que sea un color hexadecimal válido antes de aplicar
+			if ( /^#[0-9A-F]{6}$/i.test( settings.themeColor ) ) {
+				headerEl.style.backgroundColor = settings.themeColor;
+			}
 		}
 
 		if ( chatEl && settings.chatBgUrl ) {
-			chatEl.style.backgroundImage = 'url(' + settings.chatBgUrl + ')';
+			// Validar que sea una URL válida antes de usar en CSS
+			try {
+				// Intentar crear un objeto URL para validar
+				new URL( settings.chatBgUrl );
+				// Escapar URL para uso seguro en CSS
+				var escapedUrl = settings.chatBgUrl.replace( /'/g, "\\'" ).replace( /"/g, '\\"' );
+				chatEl.style.backgroundImage = 'url("' + escapedUrl + '")';
+			} catch ( e ) {
+				// Si la URL no es válida, no aplicar background
+				console.warn( 'Invalid chat background URL:', settings.chatBgUrl );
+			}
 		}
 
 		if ( timeEl ) {
@@ -172,7 +206,19 @@
 				
 				// Construir y abrir link de WhatsApp
 				var whatsappLink = buildWhatsAppLink( userMessage );
-				window.open( whatsappLink, '_blank', 'noopener,noreferrer' );
+				
+				// Validar que el link sea válido antes de abrirlo
+				if ( whatsappLink && whatsappLink.startsWith( 'https://wa.me/' ) ) {
+					try {
+						// Validar que sea una URL válida
+						new URL( whatsappLink );
+						window.open( whatsappLink, '_blank', 'noopener,noreferrer' );
+					} catch ( urlError ) {
+						console.error( 'Invalid WhatsApp link:', whatsappLink );
+					}
+				} else {
+					console.error( 'Invalid WhatsApp link format:', whatsappLink );
+				}
 			} );
 		}
 

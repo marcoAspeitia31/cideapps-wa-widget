@@ -19,7 +19,10 @@ if ( ! current_user_can( 'manage_options' ) ) {
 
 // Mostrar mensajes de actualización
 if ( isset( $_GET['settings-updated'] ) ) {
-	add_settings_error( 'cwaw_messages', 'cwaw_message', __( 'Settings Saved', 'cideapps-wa-widget' ), 'updated' );
+	$updated = sanitize_text_field( wp_unslash( $_GET['settings-updated'] ) );
+	if ( $updated === 'true' ) {
+		add_settings_error( 'cwaw_messages', 'cwaw_message', __( 'Settings Saved', 'cideapps-wa-widget' ), 'updated' );
+	}
 }
 settings_errors( 'cwaw_messages' );
 ?>

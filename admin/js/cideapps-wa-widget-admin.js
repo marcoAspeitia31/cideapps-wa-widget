@@ -36,9 +36,26 @@
 			mediaUploader.on('select', function() {
 				var attachment = mediaUploader.state().get('selection').first().toJSON();
 				var thumbUrl = attachment.sizes && attachment.sizes.thumbnail ? attachment.sizes.thumbnail.url : attachment.url;
-				imageIdField.val(attachment.id);
-				imagePreview.html('<img src="' + thumbUrl + '" style="max-width: 150px; height: auto; display: block; margin-bottom: 10px;" />');
-				removeButton.show();
+				
+				// Validar y escapar URL antes de usar
+				if (thumbUrl) {
+					try {
+						// Validar que sea una URL válida
+						new URL(thumbUrl);
+						// Crear elemento img de forma segura
+						var img = $('<img>').attr('src', thumbUrl).css({
+							'max-width': '150px',
+							'height': 'auto',
+							'display': 'block',
+							'margin-bottom': '10px'
+						});
+						imagePreview.empty().append(img);
+						imageIdField.val(attachment.id);
+						removeButton.show();
+					} catch (e) {
+						console.error('Invalid image URL:', thumbUrl);
+					}
+				}
 			});
 
 			mediaUploader.open();
@@ -47,7 +64,7 @@
 		$('.cwaw-remove-image').on('click', function(e) {
 			e.preventDefault();
 			imageIdField.val('');
-			imagePreview.html('');
+			imagePreview.empty();
 			$(this).hide();
 		});
 
@@ -71,9 +88,30 @@
 			avatarUploader.on('select', function() {
 				var attachment = avatarUploader.state().get('selection').first().toJSON();
 				var thumbUrl = attachment.sizes && attachment.sizes.thumbnail ? attachment.sizes.thumbnail.url : attachment.url;
-				avatarIdField.val(attachment.id);
-				avatarPreview.html('<img src="' + thumbUrl + '" style="max-width: 80px; height: 80px; width: 80px; object-fit: cover; border-radius: 50%; display: block; margin-bottom: 10px; border: 2px solid #ddd;" />');
-				removeAvatarButton.show();
+				
+				// Validar y escapar URL antes de usar
+				if (thumbUrl) {
+					try {
+						// Validar que sea una URL válida
+						new URL(thumbUrl);
+						// Crear elemento img de forma segura
+						var img = $('<img>').attr('src', thumbUrl).css({
+							'max-width': '80px',
+							'height': '80px',
+							'width': '80px',
+							'object-fit': 'cover',
+							'border-radius': '50%',
+							'display': 'block',
+							'margin-bottom': '10px',
+							'border': '2px solid #ddd'
+						});
+						avatarPreview.empty().append(img);
+						avatarIdField.val(attachment.id);
+						removeAvatarButton.show();
+					} catch (e) {
+						console.error('Invalid avatar URL:', thumbUrl);
+					}
+				}
 			});
 
 			avatarUploader.open();
@@ -82,7 +120,7 @@
 		$('.cwaw-remove-avatar').on('click', function(e) {
 			e.preventDefault();
 			avatarIdField.val('');
-			avatarPreview.html('');
+			avatarPreview.empty();
 			$(this).hide();
 		});
 
@@ -105,9 +143,29 @@
 
 			chatBgUploader.on('select', function() {
 				var attachment = chatBgUploader.state().get('selection').first().toJSON();
-				chatBgIdField.val(attachment.id);
-				chatBgPreview.html('<img src="' + attachment.url + '" style="max-width: 200px; height: auto; display: block; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 4px;" />');
-				removeChatBgButton.show();
+				var bgUrl = attachment.url;
+				
+				// Validar y escapar URL antes de usar
+				if (bgUrl) {
+					try {
+						// Validar que sea una URL válida
+						new URL(bgUrl);
+						// Crear elemento img de forma segura
+						var img = $('<img>').attr('src', bgUrl).css({
+							'max-width': '200px',
+							'height': 'auto',
+							'display': 'block',
+							'margin-bottom': '10px',
+							'border': '1px solid #ddd',
+							'border-radius': '4px'
+						});
+						chatBgPreview.empty().append(img);
+						chatBgIdField.val(attachment.id);
+						removeChatBgButton.show();
+					} catch (e) {
+						console.error('Invalid background URL:', bgUrl);
+					}
+				}
 			});
 
 			chatBgUploader.open();
@@ -116,7 +174,7 @@
 		$('.cwaw-remove-chat-bg').on('click', function(e) {
 			e.preventDefault();
 			chatBgIdField.val('');
-			chatBgPreview.html('');
+			chatBgPreview.empty();
 			$(this).hide();
 		});
 
