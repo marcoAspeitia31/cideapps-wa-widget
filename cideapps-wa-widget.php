@@ -15,7 +15,7 @@
  * @wordpress-plugin
  * Plugin Name:       CIDEAPPS WhatsApp Widget
  * Plugin URI:        https://cideapps.com
- * Description:       Widget flotante de WhatsApp con tooltip y ventana tipo chat, rebrandable.
+ * Description:       Widget flotante de WhatsApp con chat, tooltip, badge y mensajes personalizables. Selector de país internacional, avatar del agente y 100% rebrandable.
  * Version:           1.0.0
  * Author:            CIDEAPPS
  * Author URI:        https://cideapps.com/
