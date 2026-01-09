@@ -107,7 +107,7 @@ class Cideapps_Wa_Widget_Admin {
 	 */
 	public function add_plugin_admin_menu() {
 		add_options_page(
-			__( 'CIDEAPPS WhatsApp Widget Settings', 'cideapps-wa-widget' ),
+			__( 'WhatsApp Floating Chat for WordPress by CIDEAPPS Settings', 'cideapps-wa-widget' ),
 			__( 'WhatsApp Widget', 'cideapps-wa-widget' ),
 			'manage_options',
 			$this->plugin_name,

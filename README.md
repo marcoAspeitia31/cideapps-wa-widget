@@ -1,4 +1,4 @@
-# CIDEAPPS WhatsApp Widget
+# WhatsApp Floating Chat for WordPress by CIDEAPPS
 
 > Widget flotante de WhatsApp completamente personalizable y rebrandable para WordPress.
 
@@ -58,7 +58,7 @@ Un plugin WordPress moderno que agrega un widget flotante de WhatsApp a tu sitio
 ### Desde WordPress Admin
 
 1. Ve a **Plugins > Añadir nuevo**
-2. Busca "CIDEAPPS WhatsApp Widget"
+2. Busca "WhatsApp Floating Chat for WordPress by CIDEAPPS"
 3. Haz clic en **Instalar ahora**
 4. Activa el plugin
 

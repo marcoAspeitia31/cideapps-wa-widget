@@ -1,4 +1,4 @@
-=== CIDEAPPS WhatsApp Widget ===
+=== WhatsApp Floating Chat for WordPress by CIDEAPPS ===
 Contributors: CIDEAPPS
 Donate link: https://cideapps.com/
 Tags: whatsapp, chat, widget, floating, contact, messenger, customer support, live chat, social media, communication, lead generation, customer service, whatsapp button, whatsapp chat, contact form, floating button, click to chat, instant messaging, customer engagement, mobile friendly, responsive
@@ -13,7 +13,7 @@ Widget flotante de WhatsApp completamente personalizable y rebrandable para Word
 
 == Description ==
 
-**CIDEAPPS WhatsApp Widget** es un plugin moderno y ligero que agrega un widget flotante de WhatsApp a tu sitio WordPress. Permite a los visitantes contactarte directamente a través de WhatsApp con un solo clic, mejorando la conversión y la experiencia del usuario.
+**WhatsApp Floating Chat for WordPress by CIDEAPPS** es un plugin moderno y ligero que agrega un widget flotante de WhatsApp a tu sitio WordPress. Permite a los visitantes contactarte directamente a través de WhatsApp con un solo clic, mejorando la conversión y la experiencia del usuario.
 
 = Características Principales =
 
@@ -79,7 +79,7 @@ Widget flotante de WhatsApp completamente personalizable y rebrandable para Word
 = Instalación Automática =
 
 1. Ve a **Plugins > Añadir nuevo** en WordPress Admin
-2. Busca "CIDEAPPS WhatsApp Widget"
+2. Busca "WhatsApp Floating Chat for WordPress by CIDEAPPS"
 3. Haz clic en **Instalar ahora**
 4. Activa el plugin
 
