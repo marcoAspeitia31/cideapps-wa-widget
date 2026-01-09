@@ -29,3 +29,71 @@
 if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 	exit;
 }
+
+/**
+ * Verificar que el usuario tiene permisos para desinstalar plugins
+ */
+if ( ! current_user_can( 'activate_plugins' ) ) {
+	return;
+}
+
+/**
+ * Verificar que la solicitud viene de WordPress admin
+ * Intentar verificar tanto para desinstalación individual como en bulk
+ */
+if ( function_exists( 'check_admin_referer' ) ) {
+	// Para desinstalación en bulk
+	if ( isset( $_REQUEST['action'] ) && $_REQUEST['action'] == 'delete-selected' ) {
+		if ( ! check_admin_referer( 'bulk-plugins' ) ) {
+			return;
+		}
+	}
+	// Para desinstalación individual
+	elseif ( isset( $_REQUEST['action'] ) && $_REQUEST['action'] == 'delete-plugin' ) {
+		if ( ! check_admin_referer( 'delete-plugin_' . plugin_basename( WP_UNINSTALL_PLUGIN ) ) ) {
+			return;
+		}
+	}
+	// Si no hay acción definida, verificar que estamos en admin
+	elseif ( ! is_admin() ) {
+		return;
+	}
+}
+
+/**
+ * Verificar que se está desinstalando el plugin correcto
+ */
+if ( __FILE__ != WP_UNINSTALL_PLUGIN ) {
+	return;
+}
+
+/**
+ * Limpiar opciones de WordPress
+ */
+delete_option( 'cwaw_settings' );
+
+/**
+ * Si es multisite, limpiar opciones de todos los sitios
+ */
+if ( is_multisite() ) {
+	global $wpdb;
+	
+	// Obtener todos los IDs de sitios en la red
+	$blog_ids = $wpdb->get_col( "SELECT blog_id FROM $wpdb->blogs" );
+	
+	foreach ( $blog_ids as $blog_id ) {
+		switch_to_blog( $blog_id );
+		
+		// Eliminar la opción en cada sitio
+		delete_option( 'cwaw_settings' );
+		
+		restore_current_blog();
+	}
+}
+
+/**
+ * Nota: No eliminamos archivos de medios subidos por el usuario
+ * (imágenes del botón, avatar del agente, fondo del chat)
+ * ya que estos pueden ser usados por otros plugins o contenido del sitio.
+ * Solo eliminamos las opciones/configuraciones del plugin.
+ */
