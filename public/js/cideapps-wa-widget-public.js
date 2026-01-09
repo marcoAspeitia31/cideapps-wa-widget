@@ -126,9 +126,6 @@
 
 		if ( chatEl && settings.chatBgUrl ) {
 			chatEl.style.backgroundImage = 'url(' + settings.chatBgUrl + ')';
-			chatEl.style.backgroundRepeat = 'repeat';
-			chatEl.style.backgroundSize = 'auto';
-			chatEl.style.backgroundPosition = 'center';
 		}
 
 		if ( timeEl ) {

@@ -17,7 +17,6 @@
 		});
 
 		// Media uploader para imagen del botón
-		var mediaUploader;
 		var imageIdField = $('#cwaw_image_id');
 		var imagePreview = $('#cwaw_image_preview');
 		var removeButton = $('.cwaw-remove-image');
@@ -25,21 +24,20 @@
 		$('.cwaw-select-image').on('click', function(e) {
 			e.preventDefault();
 
-			if (mediaUploader) {
-				mediaUploader.open();
-				return;
-			}
-
-			mediaUploader = wp.media({
-				title: $(this).data('uploader-title') || 'Select Image',
-				button: { text: 'Use this image' },
+			var uploaderTitle = $(this).data('uploader-title') || 'Select Image';
+			var mediaUploader = wp.media({
+				title: uploaderTitle,
+				button: {
+					text: 'Use this image'
+				},
 				multiple: false
 			});
 
 			mediaUploader.on('select', function() {
 				var attachment = mediaUploader.state().get('selection').first().toJSON();
+				var thumbUrl = attachment.sizes && attachment.sizes.thumbnail ? attachment.sizes.thumbnail.url : attachment.url;
 				imageIdField.val(attachment.id);
-				imagePreview.html('<img src="' + attachment.sizes.thumbnail.url + '" style="max-width: 150px; height: auto; display: block; margin-bottom: 10px;" />');
+				imagePreview.html('<img src="' + thumbUrl + '" style="max-width: 150px; height: auto; display: block; margin-bottom: 10px;" />');
 				removeButton.show();
 			});
 
@@ -54,7 +52,6 @@
 		});
 
 		// Media uploader para avatar del agente
-		var avatarUploader;
 		var avatarIdField = $('#cwaw_agent_avatar_id');
 		var avatarPreview = $('#cwaw_agent_avatar_preview');
 		var removeAvatarButton = $('.cwaw-remove-avatar');
@@ -62,14 +59,12 @@
 		$('.cwaw-select-avatar').on('click', function(e) {
 			e.preventDefault();
 
-			if (avatarUploader) {
-				avatarUploader.open();
-				return;
-			}
-
-			avatarUploader = wp.media({
-				title: $(this).data('uploader-title') || 'Select Avatar',
-				button: { text: 'Use this image' },
+			var uploaderTitle = $(this).data('uploader-title') || 'Select Avatar';
+			var avatarUploader = wp.media({
+				title: uploaderTitle,
+				button: {
+					text: 'Use this image'
+				},
 				multiple: false
 			});
 
@@ -92,7 +87,6 @@
 		});
 
 		// Media uploader para background del chat
-		var chatBgUploader;
 		var chatBgIdField = $('#cwaw_chat_bg_image_id');
 		var chatBgPreview = $('#cwaw_chat_bg_preview');
 		var removeChatBgButton = $('.cwaw-remove-chat-bg');
@@ -100,14 +94,12 @@
 		$('.cwaw-select-chat-bg').on('click', function(e) {
 			e.preventDefault();
 
-			if (chatBgUploader) {
-				chatBgUploader.open();
-				return;
-			}
-
-			chatBgUploader = wp.media({
-				title: $(this).data('uploader-title') || 'Select Background',
-				button: { text: 'Use this image' },
+			var uploaderTitle = $(this).data('uploader-title') || 'Select Background';
+			var chatBgUploader = wp.media({
+				title: uploaderTitle,
+				button: {
+					text: 'Use this image'
+				},
 				multiple: false
 			});
 

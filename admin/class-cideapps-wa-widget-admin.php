@@ -80,7 +80,7 @@ class Cideapps_Wa_Widget_Admin {
 		}
 
 		wp_enqueue_media();
-		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/cideapps-wa-widget-admin.js', array( 'jquery', 'wp-color-picker' ), $this->version, false );
+		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/cideapps-wa-widget-admin.js', array( 'jquery', 'wp-color-picker', 'media-upload', 'media-views' ), $this->version, false );
 		wp_enqueue_style( 'wp-color-picker' );
 	}
 
