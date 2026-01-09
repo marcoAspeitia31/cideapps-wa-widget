@@ -42,7 +42,21 @@
 
 	// Función para construir el link de WhatsApp con mensaje
 	function buildWhatsAppLink( userMessage ) {
-		var telephone = settings.telephone || '';
+		// Usar fullNumber si está disponible, sino construir desde dialCode + telephone
+		var fullNumber = settings.fullNumber || '';
+		
+		if ( ! fullNumber ) {
+			var dialCode = settings.dialCode || '';
+			var telephone = settings.telephone || '';
+			fullNumber = dialCode && telephone ? dialCode + telephone : telephone;
+		}
+		
+		// Validar que tengamos un número
+		fullNumber = fullNumber.replace( /[^0-9]/g, '' );
+		if ( ! fullNumber ) {
+			return '';
+		}
+		
 		var template = replacePlaceholders( settings.messageTemplate || '' );
 		
 		// Construir mensaje final: template + salto de línea + mensaje del usuario
@@ -59,7 +73,7 @@
 		}
 		
 		var encodedMessage = encodeURIComponent( finalMessage );
-		return 'https://wa.me/' + telephone + ( encodedMessage ? '?text=' + encodedMessage : '' );
+		return 'https://wa.me/' + fullNumber + ( encodedMessage ? '?text=' + encodedMessage : '' );
 	}
 
 	// Auto-resize textarea

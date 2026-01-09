@@ -43,3 +43,50 @@
 .form-table td {
 	padding: 15px 10px;
 }
+
+/* Phone field wrapper with intl-tel-input */
+.cwaw-phone-field-wrapper {
+	margin: 10px 0;
+}
+
+.cwaw-intl-tel-input {
+	width: 100%;
+	max-width: 400px;
+}
+
+#cwaw-test-number {
+	margin-top: 10px;
+}
+
+#cwaw-test-number-result {
+	display: inline-block;
+	font-size: 13px;
+	margin-left: 10px;
+	vertical-align: middle;
+}
+
+/* Estilos para intl-tel-input */
+.iti {
+	width: 100%;
+	max-width: 400px;
+	display: block;
+}
+
+.iti__flag-container {
+	cursor: pointer;
+}
+
+.iti__selected-flag {
+	padding: 0 8px 0 8px;
+}
+
+.iti__arrow {
+	border-left: 3px solid transparent;
+	border-right: 3px solid transparent;
+	border-top: 4px solid #555;
+}
+
+.iti__country-list {
+	max-height: 200px;
+	overflow-y: auto;
+}

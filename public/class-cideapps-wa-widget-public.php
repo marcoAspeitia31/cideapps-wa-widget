@@ -108,9 +108,25 @@ class Cideapps_Wa_Widget_Public {
 			}
 		}
 
+		// Mapeo de códigos de país ISO a códigos telefónicos
+		$country_dial_codes = array(
+			'mx' => '52', 'us' => '1', 'ca' => '1', 'gb' => '44', 'es' => '34', 'ar' => '54', 'br' => '55',
+			'cl' => '56', 'co' => '57', 'pe' => '51', 've' => '58', 'ec' => '593', 'py' => '595',
+			'uy' => '598', 'bo' => '591', 'cr' => '506', 'pa' => '507', 'ni' => '505', 'gt' => '502',
+			'sv' => '503', 'hn' => '504', 'do' => '1', 'pr' => '1', 'cu' => '53', 'uy' => '598'
+		);
+		
+		$country_code_iso = isset( $settings['country_code'] ) ? strtolower( $settings['country_code'] ) : 'mx';
+		$dial_code = isset( $country_dial_codes[ $country_code_iso ] ) ? $country_dial_codes[ $country_code_iso ] : '52';
+		$telephone = isset( $settings['telephone'] ) ? preg_replace( '/[^0-9]/', '', $settings['telephone'] ) : '';
+		$full_number = $telephone ? $dial_code . $telephone : '';
+
 		// Localizar script con configuraciones
 		wp_localize_script( $this->plugin_name, 'cwawSettings', array(
-			'telephone' => isset( $settings['telephone'] ) ? $settings['telephone'] : '',
+			'telephone' => $telephone,
+			'countryCode' => $country_code_iso,
+			'dialCode' => $dial_code,
+			'fullNumber' => $full_number,
 			'messageTemplate' => isset( $settings['message'] ) ? $settings['message'] : '',
 			'image' => isset( $settings['image'] ) ? $settings['image'] : 0,
 			'imageUrl' => isset( $settings['image'] ) && $settings['image'] > 0 ? wp_get_attachment_image_url( $settings['image'], 'full' ) : '',

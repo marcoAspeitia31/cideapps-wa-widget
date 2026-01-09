@@ -80,8 +80,24 @@ class Cideapps_Wa_Widget_Admin {
 		}
 
 		wp_enqueue_media();
-		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/cideapps-wa-widget-admin.js', array( 'jquery', 'wp-color-picker', 'media-upload', 'media-views' ), $this->version, false );
+		
+		// Encolar intl-tel-input desde CDN (versión 23.0.0 - estable y ligera)
+		wp_enqueue_style( 'intl-tel-input', 'https://cdn.jsdelivr.net/npm/intl-tel-input@23.0.0/build/css/intlTelInput.min.css', array(), '23.0.0' );
+		wp_enqueue_script( 'intl-tel-input', 'https://cdn.jsdelivr.net/npm/intl-tel-input@23.0.0/build/js/intlTelInput.min.js', array(), '23.0.0', false );
+		
+		// Utils de intl-tel-input para validación
+		wp_enqueue_script( 'intl-tel-input-utils', 'https://cdn.jsdelivr.net/npm/intl-tel-input@23.0.0/build/js/utils.js', array( 'intl-tel-input' ), '23.0.0', false );
+		
+		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/cideapps-wa-widget-admin.js', array( 'jquery', 'wp-color-picker', 'media-upload', 'media-views', 'intl-tel-input', 'intl-tel-input-utils' ), $this->version, false );
 		wp_enqueue_style( 'wp-color-picker' );
+		
+		// Localizar script con configuraciones para test number
+		$settings = get_option( 'cwaw_settings', array() );
+		wp_localize_script( $this->plugin_name, 'cwawAdmin', array(
+			'siteName' => get_bloginfo( 'name' ),
+			'adminUrl' => admin_url(),
+			'messageTemplate' => isset( $settings['message'] ) ? $settings['message'] : '',
+		) );
 	}
 
 	/**
@@ -289,7 +305,16 @@ class Cideapps_Wa_Widget_Admin {
 		$sanitized = array();
 
 		// Button section
+		// Sanitizar country_code (ISO 3166-1 alpha-2, ej: mx, us, es)
+		$sanitized['country_code'] = isset( $input['country_code'] ) ? strtolower( sanitize_text_field( $input['country_code'] ) ) : 'mx';
+		// Validar que sea un código ISO válido (2 letras)
+		if ( strlen( $sanitized['country_code'] ) !== 2 || ! preg_match( '/^[a-z]{2}$/', $sanitized['country_code'] ) ) {
+			$sanitized['country_code'] = 'mx'; // Default a México si es inválido
+		}
+		
+		// Sanitizar telephone (solo dígitos, sin código de país)
 		$sanitized['telephone'] = isset( $input['telephone'] ) ? preg_replace( '/[^0-9]/', '', sanitize_text_field( $input['telephone'] ) ) : '';
+		
 		$sanitized['message'] = isset( $input['message'] ) ? wp_kses_post( $input['message'] ) : '';
 		$sanitized['image'] = isset( $input['image'] ) ? absint( $input['image'] ) : 0;
 		$sanitized['tooltip'] = isset( $input['tooltip'] ) ? sanitize_text_field( $input['tooltip'] ) : '';
@@ -327,9 +352,44 @@ class Cideapps_Wa_Widget_Admin {
 	 */
 	public function telephone_field_callback() {
 		$options = get_option( 'cwaw_settings', array() );
-		$value = isset( $options['telephone'] ) ? $options['telephone'] : '';
-		echo '<input type="text" name="cwaw_settings[telephone]" value="' . esc_attr( $value ) . '" class="regular-text" placeholder="1234567890" />';
-		echo '<p class="description">' . esc_html__( 'Only digits. If empty, the widget will not be displayed.', 'cideapps-wa-widget' ) . '</p>';
+		$telephone = isset( $options['telephone'] ) ? $options['telephone'] : '';
+		$country_code = isset( $options['country_code'] ) ? $options['country_code'] : 'mx'; // México por defecto
+		$message_template = isset( $options['message'] ) ? $options['message'] : '';
+		
+		// Determinar valor inicial completo si hay teléfono guardado
+		$initial_value = '';
+		if ( $telephone ) {
+			// Si el teléfono ya incluye el código de país, separarlo
+			// Por ahora, asumimos que telephone es solo el número sin código
+			$initial_value = $telephone;
+		}
+		
+		?>
+		<div class="cwaw-phone-field-wrapper">
+			<div style="margin-bottom: 10px;">
+				<input 
+					type="tel" 
+					id="cwaw_telephone" 
+					name="cwaw_settings[telephone]" 
+					value="<?php echo esc_attr( $initial_value ); ?>" 
+					class="regular-text cwaw-intl-tel-input" 
+					placeholder="<?php esc_attr_e( 'Enter phone number', 'cideapps-wa-widget' ); ?>"
+					data-initial-country="<?php echo esc_attr( $country_code ); ?>"
+				/>
+				<input type="hidden" id="cwaw_country_code" name="cwaw_settings[country_code]" value="<?php echo esc_attr( $country_code ); ?>" />
+				<input type="hidden" id="cwaw_full_number" name="cwaw_settings[full_number]" value="" />
+			</div>
+			<div style="margin-top: 10px;">
+				<button type="button" id="cwaw-test-number" class="button button-secondary">
+					<?php esc_html_e( 'Test Number', 'cideapps-wa-widget' ); ?>
+				</button>
+				<span id="cwaw-test-number-result" style="margin-left: 10px; font-size: 13px; font-weight: 600;"></span>
+			</div>
+			<p class="description" style="margin-top: 10px;">
+				<?php esc_html_e( 'Select country and enter phone number. If empty, the widget will not be displayed.', 'cideapps-wa-widget' ); ?>
+			</p>
+		</div>
+		<?php
 	}
 
 	public function message_field_callback() {
