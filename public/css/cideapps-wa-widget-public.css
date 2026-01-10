@@ -177,6 +177,7 @@
 /* Close Button */
 .cwaw-window__close {
 	position: absolute;
+    padding: 0px;
 	top: 12px;
 	right: 12px;
 	width: 32px;
@@ -192,6 +193,7 @@
 	justify-content: center;
 	z-index: 10;
 	transition: background-color 0.2s ease;
+	overflow: inherit;
 }
 
 .cwaw-window__close:hover {
